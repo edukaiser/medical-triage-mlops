@@ -1,0 +1,24 @@
+artifact_path: file:c:/dev/Hands-ON - Projetos - TechChallenge/TechChallenge/Fase
+  3/medical-triage-mlops/notebooks/mlruns/1/models/m-dc871c9133b24116bcd8b4238a9a8022/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.9
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.16.0
+model_id: m-dc871c9133b24116bcd8b4238a9a8022
+model_size_bytes: 209139
+model_uuid: m-dc871c9133b24116bcd8b4238a9a8022
+prompts: null
+run_id: 4ce3f0e70c8d4de8937d623df23008f6
+utc_time_created: '2026-09-10 00:08:37.101900'

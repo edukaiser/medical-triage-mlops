@@ -1,0 +1,43 @@
+[project]
+name = "medical-triage-mlops"
+version = "0.1.0"
+description = "Pipeline MLOps para Triagem Médica Baseada em NLP"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mlflow>=2.15.0",
+    "pandas>=2.2.0,<3",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "python-dateutil>=2.9.0.post0",
+]
+
+[dependency-groups]
+dev = [
+    "dvc>=3.67.1",
+    "ipykernel>=7.3.0",
+    "pre-commit>=4.6.0",
+    "pytest>=9.1.1",
+    "python-dotenv>=1.2.2",
+    "ruff>=0.15.2",
+]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = ["notebooks/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "ANN", "D"]
+ignore = ["D100", "D104"] 
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
