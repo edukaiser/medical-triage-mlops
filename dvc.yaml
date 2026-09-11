@@ -1,0 +1,28 @@
+stages:
+  preprocess:
+    cmd: uv run python src/stages/preprocess.py
+    deps:
+      - data/raw
+      - src/stages/preprocess.py
+    outs:
+      - data/processed/medical_tc_train_clean.csv
+      - data/processed/medical_tc_test_clean.csv
+
+  train:
+    cmd: uv run python src/stages/train.py
+    deps:
+      - data/processed/medical_tc_train_clean.csv
+      - src/stages/train.py
+    outs:
+      - models/model.pkl
+      - models/tfidf_vectorizer.pkl
+
+  evaluate:
+    cmd: uv run python src/stages/evaluate.py
+    deps:
+      - models/model.pkl
+      - models/tfidf_vectorizer.pkl
+      - data/processed/medical_tc_test_clean.csv
+      - src/stages/evaluate.py
+    outs:
+      - metrics/scores.json

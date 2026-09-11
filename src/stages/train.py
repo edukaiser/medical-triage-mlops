@@ -7,6 +7,7 @@ import mlflow.sklearn
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Configuração de logging
 logging.basicConfig(
@@ -20,7 +21,6 @@ def main() -> None:
 
     Gerando métricas no MLflow e salvando o artefato final.
     """
-    # 1. Definição de caminhos de forma agnóstica (raiz do projeto)
     root_dir = Path(__file__).resolve().parents[2]
     processed_data_path = root_dir / "data" / "processed" / "medical_tc_train_clean.csv"
     vectorizer_path = root_dir / "models" / "tfidf_vectorizer.pkl"
@@ -29,16 +29,19 @@ def main() -> None:
 
     model_output_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info("Carregando dados processados e vetorizador...")
+    logger.info("Carregando dados processados...")
     df_train = pd.read_csv(processed_data_path)
 
     x_text = df_train["clean_abstract"].fillna("")
     y_train = df_train["condition_label"]
 
-    vectorizer = joblib.load(vectorizer_path)
+    logger.info("Instanciando e ajustando o TfidfVectorizer...")
+    vectorizer = TfidfVectorizer(max_features=5000)
+    x_train_features = vectorizer.fit_transform(x_text)
 
-    logger.info("Transformando os textos em matriz TF-IDF...")
-    x_train_features = vectorizer.transform(x_text)
+    # Salva o vetorizador treinado para uso posterior na API/inferência
+    joblib.dump(vectorizer, vectorizer_path)
+    logger.info(f"Vetorizador salvo com sucesso em: {vectorizer_path}")
 
     # 2. Inicialização do MLflow Tracking
     mlflow.set_experiment("medical-triage-classification")
@@ -53,9 +56,7 @@ def main() -> None:
         mlflow.log_param("C", c_param)
         mlflow.log_param("max_iter", max_iter_param)
 
-        model = LogisticRegression(
-            C=c_param, max_iter=max_iter_param, random_state=42
-        )
+        model = LogisticRegression(C=c_param, max_iter=max_iter_param, random_state=42)
         model.fit(x_train_features, y_train)
 
         predictions = model.predict(x_train_features)
@@ -69,6 +70,7 @@ def main() -> None:
 
         mlflow.sklearn.log_model(model, "model")
         mlflow.log_artifact(str(model_output_path))
+        mlflow.log_artifact(str(vectorizer_path))
 
 
 if __name__ == "__main__":

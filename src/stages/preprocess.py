@@ -21,10 +21,10 @@ def main() -> None:
     base_dir = Path(__file__).resolve().parents[2]
     raw_dir = base_dir / "data" / "raw"
     processed_dir = base_dir / "data" / "processed"
-    
+
     print(f"Procurando dados em: {raw_dir.resolve()}")
     print(f"O arquivo de treino existe? {(raw_dir / 'medical_tc_train.csv').exists()}")
-    
+
     processed_dir.mkdir(parents=True, exist_ok=True)
 
     # Carregar e processar treino
