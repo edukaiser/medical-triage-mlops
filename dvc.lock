@@ -1,0 +1,67 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: uv run python src/stages/preprocess.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: d88f855ec18c26816df4fcaed9ed6cb4.dir
+      size: 17841496
+      nfiles: 3
+    - path: src/stages/preprocess.py
+      hash: md5
+      md5: 63477bf51eb43cd33e8908f556fd2c21
+      size: 1766
+    outs:
+    - path: data/processed/medical_tc_test_clean.csv
+      hash: md5
+      md5: 498fbb54a65456404738e23a1377bc80
+      size: 7080214
+    - path: data/processed/medical_tc_train_clean.csv
+      hash: md5
+      md5: 9d35b99324b0af646429ec077dac18a3
+      size: 28137040
+  train:
+    cmd: uv run python src/stages/train.py
+    deps:
+    - path: data/processed/medical_tc_train_clean.csv
+      hash: md5
+      md5: 9d35b99324b0af646429ec077dac18a3
+      size: 28137040
+    - path: src/stages/train.py
+      hash: md5
+      md5: ee13f80a3c63606bc33b9d80a464ccd8
+      size: 2474
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: a9008c2f769ba9299cc5ebb3606dc5a2
+      size: 200943
+    - path: models/tfidf_vectorizer.pkl
+      hash: md5
+      md5: 31bdc790375ae3a0d4bb9e67f434ee45
+      size: 189405
+  evaluate:
+    cmd: uv run python src/stages/evaluate.py
+    deps:
+    - path: data/processed/medical_tc_test_clean.csv
+      hash: md5
+      md5: 498fbb54a65456404738e23a1377bc80
+      size: 7080214
+    - path: models/model.pkl
+      hash: md5
+      md5: a9008c2f769ba9299cc5ebb3606dc5a2
+      size: 200943
+    - path: models/tfidf_vectorizer.pkl
+      hash: md5
+      md5: 31bdc790375ae3a0d4bb9e67f434ee45
+      size: 189405
+    - path: src/stages/evaluate.py
+      hash: md5
+      md5: ee154039ba491ac9980ce4b1c7506fee
+      size: 2385
+    outs:
+    - path: metrics/scores.json
+      hash: md5
+      md5: 22591a3ec0b0bfd1d833c6a80653e248
+      size: 1492
