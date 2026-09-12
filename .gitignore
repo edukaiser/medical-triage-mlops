@@ -1,0 +1,24 @@
+# Python / Venv
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# ML / Artefatos locais (gerenciados pelo DVC)
+models/*.pkl
+data/raw/
+data/processed/
+
+# MLflow / Logs
+mlruns/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# DVC
+.dvc/tmp/
