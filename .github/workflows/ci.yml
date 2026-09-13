@@ -27,6 +27,9 @@ jobs:
     - name: Install dependencies
       run: uv pip install --system -e .
 
+    - name: Run DVC Reproduce (Generate Models & Data)
+      run: uv run dvc repro
+
     - name: Run Ruff Lint Check
       run: uv run ruff check .
 
