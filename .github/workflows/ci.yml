@@ -25,13 +25,13 @@ jobs:
         enable-cache: true
 
     - name: Install dependencies
-      run: uv pip install --system -e .[dev]
+      run: uv pip install --system -e .
 
     - name: Run Ruff Lint Check
-      run: ruff check .
+      run: uv run ruff check .
 
     - name: Run Unit Tests with Pytest
-      run: pytest
+      run: uv run pytest
 
     - name: Build Docker Image
       run: docker build -t medical-triage-api:latest .
