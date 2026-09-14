@@ -7,6 +7,7 @@ import joblib
 from fastapi import FastAPI, HTTPException
 from src.api.schemas import TriageInput, TriageOutput
 from collections.abc import AsyncIterator
+from prometheus_fastapi_instrumentator import Instrumentator
 
 ml_models = {}
 
@@ -39,6 +40,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/health", status_code=200)
