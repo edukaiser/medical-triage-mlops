@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import joblib
+import onnxruntime as ort
+import numpy as np
 from fastapi import FastAPI, HTTPException
 from src.api.schemas import TriageInput, TriageOutput
 from collections.abc import AsyncIterator
@@ -19,7 +21,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Os artefatos de ML na inicialização.
     """
     root_dir = Path(__file__).resolve().parents[2]
-    model_path = root_dir / "models" / "model.pkl"
+    model_path = root_dir / "models" / "model.onnx"  # Alterado para .onnx
     vectorizer_path = root_dir / "models" / "tfidf_vectorizer.pkl"
 
     if not model_path.exists() or not vectorizer_path.exists():
@@ -27,7 +29,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "Artefatos do modelo não encontrados. Execute o DVC repro antes.",
         )
 
-    ml_models["model"] = joblib.load(model_path)
+    # Inicializa a sessão do ONNX Runtime para inferência de alta performance
+    ml_models["model"] = ort.InferenceSession(str(model_path))
     ml_models["vectorizer"] = joblib.load(vectorizer_path)
     yield
     ml_models.clear()
@@ -60,19 +63,36 @@ def predict(payload: TriageInput) -> TriageOutput:
 
     Resumo clínico fornecido.
     """
-    model = ml_models.get("model")
+    model_session = ml_models.get("model")
     vectorizer = ml_models.get("vectorizer")
 
-    if not model or not vectorizer:
+    if not model_session or not vectorizer:
         raise HTTPException(
             status_code=500,
             detail="Modelo não carregado na memória.",
         )
 
-    x_features = vectorizer.transform([payload.abstract])
-    prediction = model.predict(x_features)[0]
-    probabilities = model.predict_proba(x_features)[0]
-    confidence = float(max(probabilities))
+    # 1. Vetoriza o texto e converte para array densamente
+    # tipado em float32 (exigido pelo ONNX)
+    x_features = vectorizer.transform([payload.abstract]).toarray().astype(np.float32)
+
+    # 2. Prepara o input no formato que o ONNX Runtime espera
+    input_name = model_session.get_inputs()[0].name
+    ort_inputs = {input_name: x_features}
+
+    # 3. Executa a inferência otimizada via ONNX
+    ort_outs = model_session.run(None, ort_inputs)
+
+    prediction = ort_outs[0][0]
+
+    # Se o modelo também retornar probabilidades
+    # (geralmente ort_outs[1] contém as probabilidades por classe)
+    probabilities = ort_outs[1][0] if len(ort_outs) > 1 else [1.0]
+    confidence = (
+        float(max(probabilities.values()))
+        if isinstance(probabilities, dict)
+        else float(max(probabilities))
+    )
 
     return TriageOutput(
         condition_label=int(prediction),
