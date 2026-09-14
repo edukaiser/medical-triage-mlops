@@ -10,8 +10,8 @@ stages:
       nfiles: 3
     - path: src/stages/preprocess.py
       hash: md5
-      md5: 63477bf51eb43cd33e8908f556fd2c21
-      size: 1766
+      md5: 281fe33175ccc6b62871eda6ead3f250
+      size: 1759
     outs:
     - path: data/processed/medical_tc_test_clean.csv
       hash: md5
@@ -30,8 +30,8 @@ stages:
       size: 28137040
     - path: src/stages/train.py
       hash: md5
-      md5: ee13f80a3c63606bc33b9d80a464ccd8
-      size: 2474
+      md5: cb03821b65540076d2b03b0ab99d95f6
+      size: 2575
     outs:
     - path: models/model.pkl
       hash: md5
@@ -39,7 +39,7 @@ stages:
       size: 200943
     - path: models/tfidf_vectorizer.pkl
       hash: md5
-      md5: 31bdc790375ae3a0d4bb9e67f434ee45
+      md5: 3838c1500edc4929b070b9c63edc14b8
       size: 189405
   evaluate:
     cmd: uv run python src/stages/evaluate.py
@@ -54,12 +54,12 @@ stages:
       size: 200943
     - path: models/tfidf_vectorizer.pkl
       hash: md5
-      md5: 31bdc790375ae3a0d4bb9e67f434ee45
+      md5: 3838c1500edc4929b070b9c63edc14b8
       size: 189405
     - path: src/stages/evaluate.py
       hash: md5
-      md5: ee154039ba491ac9980ce4b1c7506fee
-      size: 2385
+      md5: db978081ccf6279bf2a7481b53f7b416
+      size: 2386
     outs:
     - path: metrics/scores.json
       hash: md5
