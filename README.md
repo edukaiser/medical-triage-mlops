@@ -4,7 +4,7 @@
 
 Projeto de Machine Learning Ops para classificação automatizada de laudos médicos com foco em triagem clínica e priorização de risco.
 
-Resumo rápido (Vídeo Explicativo):  [Vídeo Resumo do Sistema de Recomendação.]()
+Resumo rápido (Vídeo Explicativo):  [Vídeo Resumo do Sistema de Recomendação.](https://drive.google.com/file/d/1nvUmuqjNaEXcEdzH7oSE0-9wI4_yFzCt/view?usp=sharing)
 
 ## 🎯 Visão Geral
 
